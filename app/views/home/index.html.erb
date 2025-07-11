@@ -1,0 +1,24 @@
+<h1>Welcome to the Organization Access Management.</h1>
+
+<% if user_signed_in? %>
+  <p>Welcome, <%= current_user.email %></p>
+
+  <% if @pending_minors.any? %>
+    <h3>Please confim your child account.</h3>
+    <ul>
+      <% @pending_minors.each do |minor| %>
+        <li>
+          <strong><%= minor.name %></strong> (Email: <%= minor.email %>, Age: <%= minor.age %>)
+          <%= button_to "Confirm", confirm_child_path(minor), method: :post %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%= link_to "Organizations List", organizations_path %>
+  <%= button_to 'Logout', destroy_user_session_path, method: :delete %>
+<% else %>
+  <%= link_to 'Sign Up', new_user_registration_path %> |
+
+  <%= link_to 'Login', new_user_session_path %>
+<% end %>

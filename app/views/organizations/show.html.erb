@@ -1,0 +1,49 @@
+<%= render @organization %>
+
+<h3 style="margin-top: 50px;">Contents</h3>
+
+<div id="contents">
+  <% @contents.each do |content| %>
+    <%= render content %>
+    <p>
+      <%= link_to "Show this content", content %>
+    </p>
+  <% end %>
+</div>
+
+
+<% if current_user.organization_users.find_by(organization: @organization, role: "admin").present? %>
+  <%= link_to "New content", new_content_path(organization_id: @organization.id) %>
+
+  <h3 style="margin-top: 50px;">Organization Members</h3>
+  <ul>
+    <% @organization.organization_users.includes(:user).each do |membership| %>
+      <li><%= membership.user.name %> - <%= membership.role.titleize %></li>
+    <% end %>
+  </ul>
+
+  <h3 style="margin-top: 50px;">Add User to Organization</h3>
+
+  <%= form_with url: add_user_organization_path(@organization), method: :post, local: true do |f| %>
+    <div>
+      <%= label_tag :email, "User Email" %><br>
+      <%= text_field_tag :email, nil, placeholder: "user@example.com" %>
+    </div>
+
+    <div>
+      <%= label_tag :role, "Role" %><br>
+      <%= select_tag :role, options_for_select(OrganizationUser.roles.keys.map { |r| [r.titleize, r] }) %>
+    </div>
+
+    <div>
+      <%= submit_tag "Add User" %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 50px;">
+    <%= link_to "Edit this organization", edit_organization_path(@organization) %> |
+    <%= button_to "Destroy this organization", @organization, method: :delete %>
+  </div>
+<% end %>
+
+<%= link_to "Back to organizations", organizations_path %>
